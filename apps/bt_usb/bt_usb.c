@@ -1,17 +1,8 @@
-/** usb_serial app:
-This app allows you to turn a Wixel into a USB-to-TTL serial adapter.
-For complete documentation and a precompiled version of this app, see the
-"USB-to-Serial App" section of the Pololu Wixel User's Guide:
-http://www.pololu.com/docs/0J46
+/** bt_usb app:
+This app allows you to turn a Wixel into a Bluetooth to USB adapter.
 == Pinout ==
-P1_0 = nDTR: general purpose output pin controlled by computer
-P1_1 = nRTS: general purpose output pin controlled by computer
-P1_2 = nDSR: general purpose input pin reported to computer
-P1_3 = nCD: general purpose input pin reported to computer
-(P1_4: Reserved for CT flow control line in future version.)
-(P1_5: Reserved for RT flow control line in future version.)
-P1_6 = TX:  transmits data from computer
-P1_7 = RX:  receives data and sends it to the computer
+P1_6 = TX:  transmits data to Bluetooth module
+P1_7 = RX:  receives data from Bluetooth module
 */
 
 /*
@@ -62,17 +53,6 @@ void usbToUartService()
         usbComTxSendByte(uart1RxReceiveByte());
     }
 
-    // Control lines controlled by computer.
-    P1_0 = !(usbComRxControlSignals() & ACM_CONTROL_LINE_DTR);
-    P1_1 = !(usbComRxControlSignals() & ACM_CONTROL_LINE_RTS);
-    P1DIR |= (1<<0) | (1<<1);
-
-    // Control lines controlled by device.
-
-    signals = 0;
-    if (!P1_2){ signals |= ACM_SERIAL_STATE_TX_CARRIER; } // TX Carrier = DSR
-    if (!P1_3){ signals |= ACM_SERIAL_STATE_RX_CARRIER; } // RX Carrier = CD
-    usbComTxControlSignals(signals);
 }
 
 void lineCodingChanged()
